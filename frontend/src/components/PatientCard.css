@@ -1,0 +1,66 @@
+.patient-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    position: relative;
+}
+
+.patient-card:hover {
+    transform: translateY(-2px);
+}
+
+.patient-card-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-500), var(--accent-teal));
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.patient-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.patient-card-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-100);
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.patient-card-date {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+}
+
+.patient-card-delete {
+    opacity: 0;
+    transition: opacity var(--transition);
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+    padding: 0.5rem;
+}
+
+.patient-card-delete svg {
+    width: 18px;
+    height: 18px;
+}
+
+.patient-card:hover .patient-card-delete {
+    opacity: 1;
+}
+
+.patient-card-delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+}

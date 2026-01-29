@@ -1,0 +1,6 @@
+@AcompanhamentoPaciente.Api_HostAddress = http://localhost:5008
+
+GET {{AcompanhamentoPaciente.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
