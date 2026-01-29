@@ -44,14 +44,13 @@ public class AppDbContext : DbContext
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Seed default psychologist
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword("admin123");
+        // Seed default psychologist with pre-hashed password for "admin123"
         modelBuilder.Entity<Psicologo>().HasData(new Psicologo
         {
             Id = 1,
             Nome = "Dr. Admin",
             Email = "admin@clinica.com",
-            PasswordHash = hashedPassword
+            PasswordHash = "$2a$11$K5FxKqW0qKPe5jMB9sqxmu.XD6JT3.yk3EfJqrGUcZqnOBG9WFxVe"
         });
     }
 }

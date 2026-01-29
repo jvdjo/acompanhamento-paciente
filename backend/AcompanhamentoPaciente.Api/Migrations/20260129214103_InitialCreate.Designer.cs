@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AcompanhamentoPaciente.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260129211132_InitialCreate")]
+    [Migration("20260129214103_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -86,7 +86,7 @@ namespace AcompanhamentoPaciente.Api.Migrations
                             Id = 1,
                             Email = "admin@clinica.com",
                             Nome = "Dr. Admin",
-                            PasswordHash = "$2a$11$0jG1ADnbyGgwoX74mFs7weuI1gzjr0dhvAImEk/W2qxNINy5Gnhly"
+                            PasswordHash = "$2a$11$K5FxKqW0qKPe5jMB9sqxmu.XD6JT3.yk3EfJqrGUcZqnOBG9WFxVe"
                         });
                 });
 

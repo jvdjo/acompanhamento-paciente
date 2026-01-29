@@ -72,7 +72,7 @@ namespace AcompanhamentoPaciente.Api.Migrations
             migrationBuilder.InsertData(
                 table: "Psicologos",
                 columns: new[] { "Id", "Email", "Nome", "PasswordHash" },
-                values: new object[] { 1, "admin@clinica.com", "Dr. Admin", "$2a$11$0jG1ADnbyGgwoX74mFs7weuI1gzjr0dhvAImEk/W2qxNINy5Gnhly" });
+                values: new object[] { 1, "admin@clinica.com", "Dr. Admin", "$2a$11$K5FxKqW0qKPe5jMB9sqxmu.XD6JT3.yk3EfJqrGUcZqnOBG9WFxVe" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pacientes_PsicologoId",

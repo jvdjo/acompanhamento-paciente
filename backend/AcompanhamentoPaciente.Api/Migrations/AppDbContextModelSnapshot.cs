@@ -83,7 +83,7 @@ namespace AcompanhamentoPaciente.Api.Migrations
                             Id = 1,
                             Email = "admin@clinica.com",
                             Nome = "Dr. Admin",
-                            PasswordHash = "$2a$11$0jG1ADnbyGgwoX74mFs7weuI1gzjr0dhvAImEk/W2qxNINy5Gnhly"
+                            PasswordHash = "$2a$11$K5FxKqW0qKPe5jMB9sqxmu.XD6JT3.yk3EfJqrGUcZqnOBG9WFxVe"
                         });
                 });
 
