@@ -1,10 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AcompanhamentoPaciente.Api.Data;
-using AcompanhamentoPaciente.Api.DTOs;
-using AcompanhamentoPaciente.Api.Models;
+using AcompanhamentoPaciente.Application.DTOs;
+using AcompanhamentoPaciente.Application.Interfaces;
 
 namespace AcompanhamentoPaciente.Api.Controllers;
 
@@ -13,11 +11,11 @@ namespace AcompanhamentoPaciente.Api.Controllers;
 [Authorize]
 public class SessoesController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ISessaoService _sessaoService;
 
-    public SessoesController(AppDbContext context)
+    public SessoesController(ISessaoService sessaoService)
     {
-        _context = context;
+        _sessaoService = sessaoService;
     }
 
     private int GetPsicologoId()
@@ -26,38 +24,17 @@ public class SessoesController : ControllerBase
         return int.Parse(claim?.Value ?? "0");
     }
 
-    private async Task<bool> PacienteBelongsToPsicologo(int pacienteId)
-    {
-        var psicologoId = GetPsicologoId();
-        return await _context.Pacientes
-            .AnyAsync(p => p.Id == pacienteId && p.PsicologoId == psicologoId);
-    }
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SessaoDto>>> GetSessoes(int pacienteId)
     {
-        if (!await PacienteBelongsToPsicologo(pacienteId))
-            return NotFound();
-
-        var sessoes = await _context.Sessoes
-            .Where(s => s.PacienteId == pacienteId)
-            .OrderByDescending(s => s.Data)
-            .Select(s => new SessaoDto(s.Id, s.Data, s.Anotacoes))
-            .ToListAsync();
-
+        var sessoes = await _sessaoService.GetAllByPacienteAsync(pacienteId, GetPsicologoId());
         return Ok(sessoes);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<SessaoDto>> GetSessao(int pacienteId, int id)
     {
-        if (!await PacienteBelongsToPsicologo(pacienteId))
-            return NotFound();
-
-        var sessao = await _context.Sessoes
-            .Where(s => s.Id == id && s.PacienteId == pacienteId)
-            .Select(s => new SessaoDto(s.Id, s.Data, s.Anotacoes))
-            .FirstOrDefaultAsync();
+        var sessao = await _sessaoService.GetByIdAsync(id, pacienteId, GetPsicologoId());
 
         if (sessao == null)
             return NotFound();
@@ -68,39 +45,25 @@ public class SessoesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<SessaoDto>> CreateSessao(int pacienteId, [FromBody] CreateSessaoRequest request)
     {
-        if (!await PacienteBelongsToPsicologo(pacienteId))
-            return NotFound();
-
-        var sessao = new Sessao
-        {
-            PacienteId = pacienteId,
-            Data = request.Data ?? DateTime.UtcNow
-        };
-
-        _context.Sessoes.Add(sessao);
-        await _context.SaveChangesAsync();
+        var sessao = await _sessaoService.CreateAsync(request, pacienteId, GetPsicologoId());
+        
+        if (sessao == null) 
+            return NotFound(); // Ou BadRequest dependendo da regra
 
         return CreatedAtAction(
             nameof(GetSessao), 
             new { pacienteId, id = sessao.Id }, 
-            new SessaoDto(sessao.Id, sessao.Data, sessao.Anotacoes)
+            sessao
         );
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSessao(int pacienteId, int id, [FromBody] UpdateSessaoRequest request)
     {
-        if (!await PacienteBelongsToPsicologo(pacienteId))
+        var success = await _sessaoService.UpdateAsync(id, request, pacienteId, GetPsicologoId());
+
+        if (!success)
             return NotFound();
-
-        var sessao = await _context.Sessoes
-            .FirstOrDefaultAsync(s => s.Id == id && s.PacienteId == pacienteId);
-
-        if (sessao == null)
-            return NotFound();
-
-        sessao.Anotacoes = request.Anotacoes;
-        await _context.SaveChangesAsync();
 
         return NoContent();
     }
@@ -108,17 +71,10 @@ public class SessoesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSessao(int pacienteId, int id)
     {
-        if (!await PacienteBelongsToPsicologo(pacienteId))
+        var success = await _sessaoService.DeleteAsync(id, pacienteId, GetPsicologoId());
+
+        if (!success)
             return NotFound();
-
-        var sessao = await _context.Sessoes
-            .FirstOrDefaultAsync(s => s.Id == id && s.PacienteId == pacienteId);
-
-        if (sessao == null)
-            return NotFound();
-
-        _context.Sessoes.Remove(sessao);
-        await _context.SaveChangesAsync();
 
         return NoContent();
     }

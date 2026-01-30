@@ -1,15 +1,14 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using AcompanhamentoPaciente.Api.Data;
-using AcompanhamentoPaciente.Api.Services;
+using AcompanhamentoPaciente.Application;
+using AcompanhamentoPaciente.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Add Layers
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
@@ -29,9 +28,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-
-// Services
-builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Controllers
 builder.Services.AddControllers();
@@ -53,15 +49,15 @@ var app = builder.Build();
 // Apply migrations and seed data
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<AcompanhamentoPaciente.Infrastructure.Data.AppDbContext>();
     try
     {
-        db.Database.Migrate();
+        // Migrations apply automatically
+        AcompanhamentoPaciente.Infrastructure.Data.DbInitializer.Initialize(db);
     }
     catch (Exception ex)
     {
-        app.Logger.LogWarning(ex, "Migration failed, trying EnsureCreated");
-        db.Database.EnsureCreated();
+        app.Logger.LogWarning(ex, "Initialization failed");
     }
 }
 

@@ -1,14 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AcompanhamentoPaciente.Application.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AcompanhamentoPaciente.Api.Services;
-
-public interface IJwtService
-{
-    string GenerateToken(int psicologoId, string email, string nome);
-}
+namespace AcompanhamentoPaciente.Infrastructure.Services;
 
 public class JwtService : IJwtService
 {
@@ -21,8 +18,10 @@ public class JwtService : IJwtService
 
     public string GenerateToken(int psicologoId, string email, string nome)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured")));
+        var keyVal = _configuration["Jwt:Key"];
+        if (string.IsNullOrEmpty(keyVal)) throw new InvalidOperationException("JWT Key not configured");
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyVal));
         
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

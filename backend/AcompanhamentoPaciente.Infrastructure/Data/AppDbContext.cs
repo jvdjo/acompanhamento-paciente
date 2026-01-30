@@ -1,7 +1,7 @@
+using AcompanhamentoPaciente.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using AcompanhamentoPaciente.Api.Models;
 
-namespace AcompanhamentoPaciente.Api.Data;
+namespace AcompanhamentoPaciente.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {

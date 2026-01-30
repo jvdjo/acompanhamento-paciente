@@ -1,10 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AcompanhamentoPaciente.Api.Data;
-using AcompanhamentoPaciente.Api.DTOs;
-using AcompanhamentoPaciente.Api.Models;
+using AcompanhamentoPaciente.Application.DTOs;
+using AcompanhamentoPaciente.Application.Interfaces;
 
 namespace AcompanhamentoPaciente.Api.Controllers;
 
@@ -13,11 +11,11 @@ namespace AcompanhamentoPaciente.Api.Controllers;
 [Authorize]
 public class PacientesController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IPacienteService _pacienteService;
 
-    public PacientesController(AppDbContext context)
+    public PacientesController(IPacienteService pacienteService)
     {
-        _context = context;
+        _pacienteService = pacienteService;
     }
 
     private int GetPsicologoId()
@@ -29,26 +27,14 @@ public class PacientesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PacienteDto>>> GetPacientes()
     {
-        var psicologoId = GetPsicologoId();
-        
-        var pacientes = await _context.Pacientes
-            .Where(p => p.PsicologoId == psicologoId)
-            .OrderBy(p => p.Nome)
-            .Select(p => new PacienteDto(p.Id, p.Nome, p.DataCadastro))
-            .ToListAsync();
-
+        var pacientes = await _pacienteService.GetAllByPsicologoAsync(GetPsicologoId());
         return Ok(pacientes);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<PacienteDto>> GetPaciente(int id)
     {
-        var psicologoId = GetPsicologoId();
-        
-        var paciente = await _context.Pacientes
-            .Where(p => p.Id == id && p.PsicologoId == psicologoId)
-            .Select(p => new PacienteDto(p.Id, p.Nome, p.DataCadastro))
-            .FirstOrDefaultAsync();
+        var paciente = await _pacienteService.GetByIdAsync(id, GetPsicologoId());
 
         if (paciente == null)
             return NotFound();
@@ -59,38 +45,22 @@ public class PacientesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<PacienteDto>> CreatePaciente([FromBody] CreatePacienteRequest request)
     {
-        var psicologoId = GetPsicologoId();
-
-        var paciente = new Paciente
-        {
-            Nome = request.Nome,
-            PsicologoId = psicologoId,
-            DataCadastro = DateTime.UtcNow
-        };
-
-        _context.Pacientes.Add(paciente);
-        await _context.SaveChangesAsync();
+        var paciente = await _pacienteService.CreateAsync(request, GetPsicologoId());
 
         return CreatedAtAction(
             nameof(GetPaciente), 
             new { id = paciente.Id }, 
-            new PacienteDto(paciente.Id, paciente.Nome, paciente.DataCadastro)
+            paciente
         );
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePaciente(int id)
     {
-        var psicologoId = GetPsicologoId();
-        
-        var paciente = await _context.Pacientes
-            .FirstOrDefaultAsync(p => p.Id == id && p.PsicologoId == psicologoId);
+        var success = await _pacienteService.DeleteAsync(id, GetPsicologoId());
 
-        if (paciente == null)
+        if (!success)
             return NotFound();
-
-        _context.Pacientes.Remove(paciente);
-        await _context.SaveChangesAsync();
 
         return NoContent();
     }

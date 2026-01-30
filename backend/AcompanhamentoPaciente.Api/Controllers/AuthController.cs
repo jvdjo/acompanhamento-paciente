@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AcompanhamentoPaciente.Api.Data;
-using AcompanhamentoPaciente.Api.DTOs;
-using AcompanhamentoPaciente.Api.Services;
+using AcompanhamentoPaciente.Application.DTOs;
+using AcompanhamentoPaciente.Application.Interfaces;
 
 namespace AcompanhamentoPaciente.Api.Controllers;
 
@@ -10,28 +8,23 @@ namespace AcompanhamentoPaciente.Api.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly IJwtService _jwtService;
+    private readonly IAuthService _authService;
 
-    public AuthController(AppDbContext context, IJwtService jwtService)
+    public AuthController(IAuthService authService)
     {
-        _context = context;
-        _jwtService = jwtService;
+        _authService = authService;
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
-        var psicologo = await _context.Psicologos
-            .FirstOrDefaultAsync(p => p.Email == request.Email);
+        var response = await _authService.LoginAsync(request);
 
-        if (psicologo == null || !BCrypt.Net.BCrypt.Verify(request.Password, psicologo.PasswordHash))
+        if (response == null)
         {
             return Unauthorized(new { message = "Email ou senha inválidos" });
         }
-
-        var token = _jwtService.GenerateToken(psicologo.Id, psicologo.Email, psicologo.Nome);
         
-        return Ok(new LoginResponse(token, psicologo.Nome));
+        return Ok(response);
     }
 }

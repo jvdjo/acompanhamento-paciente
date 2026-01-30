@@ -1,4 +1,4 @@
-namespace AcompanhamentoPaciente.Api.Models;
+namespace AcompanhamentoPaciente.Domain.Entities;
 
 public class Paciente
 {
