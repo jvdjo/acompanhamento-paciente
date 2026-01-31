@@ -1,3 +1,3 @@
-INSERT INTO "Psicologos" ("Id", "Nome", "Email", "PasswordHash") 
-VALUES (1, 'Dr. Admin', 'admin@clinica.com', '$2a$11$K5FxKqW0qKPe5jMB9sqxmu.XD6JT3.yk3EfJqrGUcZqnOBG9WFxVe')
+INSERT INTO "Psicologos" ("Id", "Nome", "Email", "Password") 
+VALUES (1, 'Dr. Admin', 'admin@clinica.com', 'admin123')
 ON CONFLICT ("Id") DO NOTHING;

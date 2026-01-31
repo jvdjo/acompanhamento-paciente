@@ -50,7 +50,7 @@ public class AppDbContext : DbContext
             Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Nome = "Dr. Admin",
             Email = "admin@clinica.com",
-            PasswordHash = "$2a$11$K5FxKqW0qKPe5jMB9sqxmu.XD6JT3.yk3EfJqrGUcZqnOBG9WFxVe"
+            Password = "admin123"
         });
     }
 }

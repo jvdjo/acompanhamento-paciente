@@ -19,7 +19,7 @@ public class AuthService : IAuthService
     {
         var psicologo = await _psicologoRepository.GetByEmailAsync(request.Email);
 
-        if (psicologo == null || !BCrypt.Net.BCrypt.Verify(request.Password, psicologo.PasswordHash))
+        if (psicologo == null || psicologo.Password != request.Password)
         {
             return null;
         }
