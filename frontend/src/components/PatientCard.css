@@ -32,7 +32,7 @@
 .patient-card-name {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--gray-100);
+    color: var(--text-main);
     margin-bottom: 0.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -41,7 +41,7 @@
 
 .patient-card-date {
     font-size: 0.875rem;
-    color: var(--gray-400);
+    color: var(--text-muted);
 }
 
 .patient-card-delete {

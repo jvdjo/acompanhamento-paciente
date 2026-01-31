@@ -46,10 +46,7 @@
 .header-title {
     font-size: 1.25rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--gray-100), var(--primary-300));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary-700);
 }
 
 .header-user {
@@ -59,7 +56,7 @@
 }
 
 .header-username {
-    color: var(--gray-300);
+    color: var(--text-main);
     font-weight: 500;
 }
 

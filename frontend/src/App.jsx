@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import LoginPage from './pages/LoginPage';
 import PacientesPage from './pages/PacientesPage';
 import PacientePage from './pages/PacientePage';
@@ -44,46 +45,48 @@ function PublicRoute({ children }) {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/pacientes"
-            element={
-              <ProtectedRoute>
-                <PacientesPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/pacientes/:id"
-            element={
-              <ProtectedRoute>
-                <PacientePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/pacientes/:pacienteId/sessoes/:sessaoId"
-            element={
-              <ProtectedRoute>
-                <SessaoPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<Navigate to="/pacientes" replace />} />
-          <Route path="*" element={<Navigate to="/pacientes" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/pacientes"
+              element={
+                <ProtectedRoute>
+                  <PacientesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/:id"
+              element={
+                <ProtectedRoute>
+                  <PacientePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/:pacienteId/sessoes/:sessaoId"
+              element={
+                <ProtectedRoute>
+                  <SessaoPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to="/pacientes" replace />} />
+            <Route path="*" element={<Navigate to="/pacientes" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
