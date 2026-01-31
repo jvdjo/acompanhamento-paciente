@@ -8,13 +8,7 @@ public static class DbInitializer
 {
     public static void Initialize(AppDbContext context)
     {
-        try
-        {
-            context.Database.Migrate();
-        }
-        catch
-        {
-            context.Database.EnsureCreated();
-        }
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
     }
 }
