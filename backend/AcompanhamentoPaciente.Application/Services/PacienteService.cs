@@ -14,7 +14,7 @@ public class PacienteService : IPacienteService
         _pacienteRepository = pacienteRepository;
     }
 
-    public async Task<IEnumerable<PacienteDto>> GetAllByPsicologoAsync(int psicologoId)
+    public async Task<IEnumerable<PacienteDto>> GetAllByPsicologoAsync(Guid psicologoId)
     {
         var pacientes = await _pacienteRepository.GetByPsicologoIdAsync(psicologoId);
         return pacientes
@@ -22,7 +22,7 @@ public class PacienteService : IPacienteService
             .Select(p => new PacienteDto(p.Id, p.Nome, p.DataCadastro));
     }
 
-    public async Task<PacienteDto?> GetByIdAsync(int id, int psicologoId)
+    public async Task<PacienteDto?> GetByIdAsync(Guid id, Guid psicologoId)
     {
         var paciente = await _pacienteRepository.GetByIdAndPsicologoIdAsync(id, psicologoId);
         if (paciente == null) return null;
@@ -30,7 +30,7 @@ public class PacienteService : IPacienteService
         return new PacienteDto(paciente.Id, paciente.Nome, paciente.DataCadastro);
     }
 
-    public async Task<PacienteDto> CreateAsync(CreatePacienteRequest request, int psicologoId)
+    public async Task<PacienteDto> CreateAsync(CreatePacienteRequest request, Guid psicologoId)
     {
         var paciente = new Paciente
         {
@@ -44,7 +44,7 @@ public class PacienteService : IPacienteService
         return new PacienteDto(paciente.Id, paciente.Nome, paciente.DataCadastro);
     }
 
-    public async Task<bool> DeleteAsync(int id, int psicologoId)
+    public async Task<bool> DeleteAsync(Guid id, Guid psicologoId)
     {
         var paciente = await _pacienteRepository.GetByIdAndPsicologoIdAsync(id, psicologoId);
         if (paciente == null) return false;

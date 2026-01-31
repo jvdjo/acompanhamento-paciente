@@ -4,8 +4,8 @@ namespace AcompanhamentoPaciente.Application.Interfaces;
 
 public interface IPacienteService
 {
-    Task<IEnumerable<PacienteDto>> GetAllByPsicologoAsync(int psicologoId);
-    Task<PacienteDto?> GetByIdAsync(int id, int psicologoId);
-    Task<PacienteDto> CreateAsync(CreatePacienteRequest request, int psicologoId);
-    Task<bool> DeleteAsync(int id, int psicologoId);
+    Task<IEnumerable<PacienteDto>> GetAllByPsicologoAsync(Guid psicologoId);
+    Task<PacienteDto?> GetByIdAsync(Guid id, Guid psicologoId);
+    Task<PacienteDto> CreateAsync(CreatePacienteRequest request, Guid psicologoId);
+    Task<bool> DeleteAsync(Guid id, Guid psicologoId);
 }

@@ -11,14 +11,14 @@ public class SessaoRepository : Repository<Sessao>, ISessaoRepository
     {
     }
 
-    public async Task<IEnumerable<Sessao>> GetByPacienteIdAsync(int pacienteId)
+    public async Task<IEnumerable<Sessao>> GetByPacienteIdAsync(Guid pacienteId)
     {
         return await _dbSet
             .Where(s => s.PacienteId == pacienteId)
             .ToListAsync();
     }
 
-    public async Task<Sessao?> GetByIdAndPacienteIdAsync(int id, int pacienteId)
+    public async Task<Sessao?> GetByIdAndPacienteIdAsync(Guid id, Guid pacienteId)
     {
         return await _dbSet
             .FirstOrDefaultAsync(s => s.Id == id && s.PacienteId == pacienteId);

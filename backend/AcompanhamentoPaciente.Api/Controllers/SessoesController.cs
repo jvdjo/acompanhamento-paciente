@@ -18,21 +18,21 @@ public class SessoesController : ControllerBase
         _sessaoService = sessaoService;
     }
 
-    private int GetPsicologoId()
+    private Guid GetPsicologoId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-        return int.Parse(claim?.Value ?? "0");
+        return Guid.Parse(claim?.Value ?? Guid.Empty.ToString());
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SessaoDto>>> GetSessoes(int pacienteId)
+    public async Task<ActionResult<IEnumerable<SessaoDto>>> GetSessoes(Guid pacienteId)
     {
         var sessoes = await _sessaoService.GetAllByPacienteAsync(pacienteId, GetPsicologoId());
         return Ok(sessoes);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SessaoDto>> GetSessao(int pacienteId, int id)
+    public async Task<ActionResult<SessaoDto>> GetSessao(Guid pacienteId, Guid id)
     {
         var sessao = await _sessaoService.GetByIdAsync(id, pacienteId, GetPsicologoId());
 
@@ -43,7 +43,7 @@ public class SessoesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<SessaoDto>> CreateSessao(int pacienteId, [FromBody] CreateSessaoRequest request)
+    public async Task<ActionResult<SessaoDto>> CreateSessao(Guid pacienteId, [FromBody] CreateSessaoRequest request)
     {
         var sessao = await _sessaoService.CreateAsync(request, pacienteId, GetPsicologoId());
         
@@ -58,7 +58,7 @@ public class SessoesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSessao(int pacienteId, int id, [FromBody] UpdateSessaoRequest request)
+    public async Task<IActionResult> UpdateSessao(Guid pacienteId, Guid id, [FromBody] UpdateSessaoRequest request)
     {
         var success = await _sessaoService.UpdateAsync(id, request, pacienteId, GetPsicologoId());
 
@@ -69,7 +69,7 @@ public class SessoesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSessao(int pacienteId, int id)
+    public async Task<IActionResult> DeleteSessao(Guid pacienteId, Guid id)
     {
         var success = await _sessaoService.DeleteAsync(id, pacienteId, GetPsicologoId());
 

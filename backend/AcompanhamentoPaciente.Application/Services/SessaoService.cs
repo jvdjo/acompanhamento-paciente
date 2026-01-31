@@ -16,13 +16,13 @@ public class SessaoService : ISessaoService
         _pacienteRepository = pacienteRepository;
     }
 
-    private async Task<bool> PacienteBelongsToPsicologo(int pacienteId, int psicologoId)
+    private async Task<bool> PacienteBelongsToPsicologo(Guid pacienteId, Guid psicologoId)
     {
         var paciente = await _pacienteRepository.GetByIdAndPsicologoIdAsync(pacienteId, psicologoId);
         return paciente != null;
     }
 
-    public async Task<IEnumerable<SessaoDto>> GetAllByPacienteAsync(int pacienteId, int psicologoId)
+    public async Task<IEnumerable<SessaoDto>> GetAllByPacienteAsync(Guid pacienteId, Guid psicologoId)
     {
         if (!await PacienteBelongsToPsicologo(pacienteId, psicologoId))
             return Enumerable.Empty<SessaoDto>();
@@ -33,7 +33,7 @@ public class SessaoService : ISessaoService
             .Select(s => new SessaoDto(s.Id, s.Data, s.Anotacoes));
     }
 
-    public async Task<SessaoDto?> GetByIdAsync(int id, int pacienteId, int psicologoId)
+    public async Task<SessaoDto?> GetByIdAsync(Guid id, Guid pacienteId, Guid psicologoId)
     {
         if (!await PacienteBelongsToPsicologo(pacienteId, psicologoId))
             return null;
@@ -44,7 +44,7 @@ public class SessaoService : ISessaoService
         return new SessaoDto(sessao.Id, sessao.Data, sessao.Anotacoes);
     }
 
-    public async Task<SessaoDto?> CreateAsync(CreateSessaoRequest request, int pacienteId, int psicologoId)
+    public async Task<SessaoDto?> CreateAsync(CreateSessaoRequest request, Guid pacienteId, Guid psicologoId)
     {
         if (!await PacienteBelongsToPsicologo(pacienteId, psicologoId))
             return null;
@@ -60,7 +60,7 @@ public class SessaoService : ISessaoService
         return new SessaoDto(sessao.Id, sessao.Data, sessao.Anotacoes);
     }
 
-    public async Task<bool> UpdateAsync(int id, UpdateSessaoRequest request, int pacienteId, int psicologoId)
+    public async Task<bool> UpdateAsync(Guid id, UpdateSessaoRequest request, Guid pacienteId, Guid psicologoId)
     {
         if (!await PacienteBelongsToPsicologo(pacienteId, psicologoId))
             return false;
@@ -74,7 +74,7 @@ public class SessaoService : ISessaoService
         return true;
     }
 
-    public async Task<bool> DeleteAsync(int id, int pacienteId, int psicologoId)
+    public async Task<bool> DeleteAsync(Guid id, Guid pacienteId, Guid psicologoId)
     {
         if (!await PacienteBelongsToPsicologo(pacienteId, psicologoId))
             return false;

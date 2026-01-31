@@ -18,10 +18,10 @@ public class PacientesController : ControllerBase
         _pacienteService = pacienteService;
     }
 
-    private int GetPsicologoId()
+    private Guid GetPsicologoId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-        return int.Parse(claim?.Value ?? "0");
+        return Guid.Parse(claim?.Value ?? Guid.Empty.ToString());
     }
 
     [HttpGet]
@@ -32,7 +32,7 @@ public class PacientesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<PacienteDto>> GetPaciente(int id)
+    public async Task<ActionResult<PacienteDto>> GetPaciente(Guid id)
     {
         var paciente = await _pacienteService.GetByIdAsync(id, GetPsicologoId());
 
@@ -55,7 +55,7 @@ public class PacientesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePaciente(int id)
+    public async Task<IActionResult> DeletePaciente(Guid id)
     {
         var success = await _pacienteService.DeleteAsync(id, GetPsicologoId());
 

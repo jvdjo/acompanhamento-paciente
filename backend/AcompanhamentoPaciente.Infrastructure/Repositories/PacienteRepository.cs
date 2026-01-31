@@ -11,14 +11,14 @@ public class PacienteRepository : Repository<Paciente>, IPacienteRepository
     {
     }
 
-    public async Task<IEnumerable<Paciente>> GetByPsicologoIdAsync(int psicologoId)
+    public async Task<IEnumerable<Paciente>> GetByPsicologoIdAsync(Guid psicologoId)
     {
         return await _dbSet
             .Where(p => p.PsicologoId == psicologoId)
             .ToListAsync();
     }
 
-    public async Task<Paciente?> GetByIdAndPsicologoIdAsync(int id, int psicologoId)
+    public async Task<Paciente?> GetByIdAndPsicologoIdAsync(Guid id, Guid psicologoId)
     {
         return await _dbSet
             .FirstOrDefaultAsync(p => p.Id == id && p.PsicologoId == psicologoId);

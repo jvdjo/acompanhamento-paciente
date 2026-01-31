@@ -16,7 +16,7 @@ public class JwtService : IJwtService
         _configuration = configuration;
     }
 
-    public string GenerateToken(int psicologoId, string email, string nome)
+    public string GenerateToken(Guid psicologoId, string email, string nome)
     {
         var keyVal = _configuration["Jwt:Key"];
         if (string.IsNullOrEmpty(keyVal)) throw new InvalidOperationException("JWT Key not configured");

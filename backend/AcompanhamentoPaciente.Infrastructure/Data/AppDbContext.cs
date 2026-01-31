@@ -47,7 +47,7 @@ public class AppDbContext : DbContext
         // Seed default psychologist with pre-hashed password for "admin123"
         modelBuilder.Entity<Psicologo>().HasData(new Psicologo
         {
-            Id = 1,
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Nome = "Dr. Admin",
             Email = "admin@clinica.com",
             PasswordHash = "$2a$11$K5FxKqW0qKPe5jMB9sqxmu.XD6JT3.yk3EfJqrGUcZqnOBG9WFxVe"
