@@ -31,14 +31,22 @@ builder.Services.AddAuthorization();
 
 // Controllers
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
 
-// CORS
+// OpenAPI (Swagger) - only in Development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddOpenApi();
+}
+
+// CORS - configurável por ambiente
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
+    ?? new[] { "http://localhost:5173" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -52,18 +60,24 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AcompanhamentoPaciente.Infrastructure.Data.AppDbContext>();
     try
     {
-        // Migrations apply automatically
         AcompanhamentoPaciente.Infrastructure.Data.DbInitializer.Initialize(db);
     }
     catch (Exception ex)
     {
-        app.Logger.LogWarning(ex, "Initialization failed");
+        app.Logger.LogWarning(ex, "Database initialization failed");
     }
 }
 
+// Development-only middleware
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+}
+
+// Production optimizations
+if (app.Environment.IsProduction())
+{
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -71,5 +85,9 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Log startup info
+app.Logger.LogInformation("Application started in {Environment} mode", app.Environment.EnvironmentName);
+app.Logger.LogInformation("Listening on: {Urls}", string.Join(", ", app.Urls));
 
 app.Run();

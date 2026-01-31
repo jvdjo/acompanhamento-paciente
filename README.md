@@ -1,85 +1,139 @@
 # PsicoNotes - Sistema de Acompanhamento de Pacientes
 
-Aplicação web para psicólogos gerenciarem seus pacientes, com registro de sessões e anotações à mão livre.
+Sistema para psicólogos gerenciarem pacientes e sessões de terapia.
 
-## 🛠️ Tecnologias
+## 🛠️ Pré-requisitos
 
-- **Backend**: .NET 9 Web API, Entity Framework Core, PostgreSQL
-- **Frontend**: React 18 + Vite, React Router
-- **Autenticação**: JWT Bearer Token
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [Node.js 20+](https://nodejs.org/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-## 📋 Pré-requisitos
+## 🚀 Execução Rápida
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download)
-- [Node.js 18+](https://nodejs.org/)
-- [PostgreSQL 14+](https://www.postgresql.org/download/)
-
-## 🚀 Como executar
-
-### 1. Configurar o banco de dados
-
-Certifique-se que o PostgreSQL está rodando. A connection string padrão é:
-
-```
-Host=localhost;Port=5432;Database=acompanhamento_paciente;Username=postgres;Password=postgres
+### Modo Debug (Desenvolvimento)
+```bash
+# Windows - duplo clique ou execute:
+run-debug.bat
 ```
 
-Altere em `backend/AcompanhamentoPaciente.Api/appsettings.json` se necessário.
+### Modo Release (Produção)
+```bash
+# Windows - duplo clique ou execute:
+run-release.bat
+```
 
-### 2. Executar o Backend
+### Parar a Aplicação
+```bash
+stop.bat
+```
 
-```powershell
+---
+
+## 📋 Execução Manual
+
+### 1. Iniciar o Banco de Dados
+```bash
+docker-compose up -d
+```
+
+### 2. Backend
+
+#### Modo Debug
+```bash
 cd backend/AcompanhamentoPaciente.Api
-dotnet run
+dotnet run --launch-profile Development
 ```
 
-O backend rodará em `http://localhost:5143` e aplicará as migrations automaticamente.
+#### Modo Release
+```bash
+cd backend/AcompanhamentoPaciente.Api
+dotnet run --launch-profile Production -c Release
+```
 
-### 3. Executar o Frontend
+### 3. Frontend
 
-```powershell
+#### Modo Debug (com hot reload)
+```bash
 cd frontend
-npm install  # apenas na primeira vez
+npm install
 npm run dev
 ```
 
-O frontend rodará em `http://localhost:5173`
+#### Modo Release (build otimizado)
+```bash
+cd frontend
+npm install
+npm run build
+npm run preview
+```
 
-## 🔐 Credenciais padrão
+---
 
-- **Email**: admin@clinica.com
-- **Senha**: admin123
+## 🌐 URLs
+
+| Ambiente | Backend | Frontend |
+|----------|---------|----------|
+| Debug    | http://localhost:5008 | http://localhost:5173 |
+| Release  | http://localhost:5008 | http://localhost:4173 |
+
+---
+
+## 🔐 Credenciais Padrão
+
+- **Email:** admin@clinica.com
+- **Senha:** admin123
+
+---
 
 ## 📁 Estrutura do Projeto
 
 ```
 acompanhamento-paciente/
 ├── backend/
-│   └── AcompanhamentoPaciente.Api/
-│       ├── Controllers/        # Controllers da API
-│       ├── Data/               # DbContext
-│       ├── DTOs/               # Data Transfer Objects
-│       ├── Models/             # Entidades
-│       └── Services/           # Serviços (JWT)
-├── frontend/
-│   └── src/
-│       ├── components/         # Componentes reutilizáveis
-│       ├── contexts/           # React Contexts
-│       ├── pages/              # Páginas da aplicação
-│       └── services/           # API client
-└── README.md
+│   ├── AcompanhamentoPaciente.Api/          # API Web
+│   ├── AcompanhamentoPaciente.Application/  # Serviços e DTOs
+│   ├── AcompanhamentoPaciente.Domain/       # Entidades
+│   └── AcompanhamentoPaciente.Infrastructure/ # Repositórios e EF
+├── frontend/                                # React + Vite
+├── docker-compose.yml                       # PostgreSQL
+├── run-debug.bat                            # Script modo debug
+├── run-release.bat                          # Script modo release
+└── stop.bat                                 # Parar containers
 ```
 
-## 🎨 Funcionalidades
+---
 
-- ✅ Login com autenticação JWT
-- ✅ Listagem de pacientes com busca
-- ✅ Cadastro de novos pacientes
-- ✅ Visualização de detalhes do paciente
-- ✅ Gerenciamento de sessões por data
-- ✅ Canvas para anotações à mão livre
-- ✅ Interface moderna com tema escuro
+## ⚙️ Configurações por Ambiente
 
-## 📝 Licença
+### Backend
+- `appsettings.Development.json` - Debug (logging detalhado)
+- `appsettings.Production.json` - Release (logging mínimo)
 
-Este projeto está sob a licença MIT.
+### Frontend
+- `.env.development` - Variáveis para desenvolvimento
+- `.env.production` - Variáveis para produção
+
+---
+
+## 🧪 Testes
+
+```bash
+# Backend
+cd backend
+dotnet test
+
+# Frontend
+cd frontend
+npm run lint
+```
+
+---
+
+## 📝 Funcionalidades
+
+- ✅ Autenticação JWT
+- ✅ Gerenciamento de Pacientes
+- ✅ Registro de Sessões
+- ✅ Notas de Texto nas Sessões
+- ✅ Canvas de Desenho para Anotações
+- ✅ Interface Responsiva (Dark Mode)
