@@ -73,8 +73,8 @@ export const createSessao = async (pacienteId, data = null) => {
   return response.data;
 };
 
-export const updateSessao = async (pacienteId, sessaoId, anotacoes) => {
-  await api.put(`/pacientes/${pacienteId}/sessoes/${sessaoId}`, { anotacoes });
+export const updateSessao = async (pacienteId, sessaoId, anotacoes, notasTexto) => {
+  await api.put(`/pacientes/${pacienteId}/sessoes/${sessaoId}`, { anotacoes, notasTexto });
 };
 
 export const deleteSessao = async (pacienteId, sessaoId) => {

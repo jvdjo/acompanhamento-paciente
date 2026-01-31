@@ -30,7 +30,7 @@ public class SessaoService : ISessaoService
         var sessoes = await _sessaoRepository.GetByPacienteIdAsync(pacienteId);
         return sessoes
             .OrderByDescending(s => s.Data)
-            .Select(s => new SessaoDto(s.Id, s.Data, s.Anotacoes));
+            .Select(s => new SessaoDto(s.Id, s.Data, s.Anotacoes, s.NotasTexto));
     }
 
     public async Task<SessaoDto?> GetByIdAsync(Guid id, Guid pacienteId, Guid psicologoId)
@@ -41,7 +41,7 @@ public class SessaoService : ISessaoService
         var sessao = await _sessaoRepository.GetByIdAndPacienteIdAsync(id, pacienteId);
         if (sessao == null) return null;
         
-        return new SessaoDto(sessao.Id, sessao.Data, sessao.Anotacoes);
+        return new SessaoDto(sessao.Id, sessao.Data, sessao.Anotacoes, sessao.NotasTexto);
     }
 
     public async Task<SessaoDto?> CreateAsync(CreateSessaoRequest request, Guid pacienteId, Guid psicologoId)
@@ -57,7 +57,7 @@ public class SessaoService : ISessaoService
 
         await _sessaoRepository.AddAsync(sessao);
         
-        return new SessaoDto(sessao.Id, sessao.Data, sessao.Anotacoes);
+        return new SessaoDto(sessao.Id, sessao.Data, sessao.Anotacoes, sessao.NotasTexto);
     }
 
     public async Task<bool> UpdateAsync(Guid id, UpdateSessaoRequest request, Guid pacienteId, Guid psicologoId)
@@ -69,6 +69,7 @@ public class SessaoService : ISessaoService
         if (sessao == null) return false;
 
         sessao.Anotacoes = request.Anotacoes;
+        sessao.NotasTexto = request.NotasTexto;
         await _sessaoRepository.UpdateAsync(sessao);
         
         return true;

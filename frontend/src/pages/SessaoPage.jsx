@@ -11,10 +11,12 @@ export default function SessaoPage() {
 
     const [sessao, setSessao] = useState(null);
     const [paciente, setPaciente] = useState(null);
+    const [notasTexto, setNotasTexto] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [savedMessage, setSavedMessage] = useState('');
+    const [activeTab, setActiveTab] = useState('notas');
 
     useEffect(() => {
         loadData();
@@ -28,6 +30,7 @@ export default function SessaoPage() {
             ]);
             setSessao(sessaoData);
             setPaciente(pacienteData);
+            setNotasTexto(sessaoData.notasTexto || '');
         } catch (err) {
             setError('Erro ao carregar sessão');
         } finally {
@@ -35,16 +38,31 @@ export default function SessaoPage() {
         }
     };
 
-    const handleSave = async (canvasData) => {
+    const handleSaveDrawing = async (canvasData) => {
         setSaving(true);
         setSavedMessage('');
 
         try {
-            await updateSessao(pacienteId, sessaoId, canvasData);
+            await updateSessao(pacienteId, sessaoId, canvasData, notasTexto);
             setSavedMessage('Anotações salvas com sucesso!');
             setTimeout(() => setSavedMessage(''), 3000);
         } catch (err) {
             setError('Erro ao salvar anotações');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSaveNotes = async () => {
+        setSaving(true);
+        setSavedMessage('');
+
+        try {
+            await updateSessao(pacienteId, sessaoId, sessao?.anotacoes, notasTexto);
+            setSavedMessage('Notas salvas com sucesso!');
+            setTimeout(() => setSavedMessage(''), 3000);
+        } catch (err) {
+            setError('Erro ao salvar notas');
         } finally {
             setSaving(false);
         }
@@ -93,11 +111,64 @@ export default function SessaoPage() {
                 {error && <div className="error-message">{error}</div>}
                 {savedMessage && <div className="success-message">{savedMessage}</div>}
 
-                <div className="canvas-container">
-                    <DrawingCanvas
-                        initialData={sessao?.anotacoes}
-                        onSave={handleSave}
-                    />
+                <div className="sessao-tabs">
+                    <button
+                        className={`tab-button ${activeTab === 'notas' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('notas')}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
+                            <path d="M16 13H8M16 17H8M10 9H8" />
+                        </svg>
+                        Notas de Texto
+                    </button>
+                    <button
+                        className={`tab-button ${activeTab === 'desenho' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('desenho')}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                            <path d="M2 2l7.586 7.586" />
+                            <circle cx="11" cy="11" r="2" />
+                        </svg>
+                        Desenho
+                    </button>
+                </div>
+
+                <div className="sessao-content">
+                    {activeTab === 'notas' && (
+                        <div className="notes-section">
+                            <textarea
+                                className="notes-textarea"
+                                placeholder="Digite suas notas sobre a sessão aqui..."
+                                value={notasTexto}
+                                onChange={(e) => setNotasTexto(e.target.value)}
+                            />
+                            <div className="notes-actions">
+                                <span className="char-count text-muted">
+                                    {notasTexto.length} caracteres
+                                </span>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={handleSaveNotes}
+                                    disabled={saving}
+                                >
+                                    {saving ? 'Salvando...' : 'Salvar Notas'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'desenho' && (
+                        <div className="canvas-container">
+                            <DrawingCanvas
+                                initialData={sessao?.anotacoes}
+                                onSave={handleSaveDrawing}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {saving && (
