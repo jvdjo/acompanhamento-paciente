@@ -15,4 +15,10 @@ public class PsicologoRepository : Repository<Psicologo>, IPsicologoRepository
     {
         return await _dbSet.FirstOrDefaultAsync(p => p.Email == email);
     }
+
+    public async Task<Psicologo?> GetByGoogleIdAsync(string googleId)
+    {
+        return await _dbSet.FirstOrDefaultAsync(p => p.GoogleId == googleId);
+    }
 }
+

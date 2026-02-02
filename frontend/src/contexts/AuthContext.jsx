@@ -9,22 +9,27 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userName = localStorage.getItem('userName');
+        const userPicture = localStorage.getItem('userPicture');
 
         if (token && userName) {
-            setUser({ name: userName, token });
+            setUser({ name: userName, token, picture: userPicture });
         }
         setLoading(false);
     }, []);
 
-    const login = (token, name) => {
+    const login = (token, name, picture = null) => {
         localStorage.setItem('token', token);
         localStorage.setItem('userName', name);
-        setUser({ name, token });
+        if (picture) {
+            localStorage.setItem('userPicture', picture);
+        }
+        setUser({ name, token, picture });
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
+        localStorage.removeItem('userPicture');
         setUser(null);
     };
 
@@ -44,3 +49,4 @@ export function useAuth() {
     }
     return context;
 }
+

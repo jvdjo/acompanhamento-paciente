@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import PacientesPage from './pages/PacientesPage';
 import PacientePage from './pages/PacientePage';
 import SessaoPage from './pages/SessaoPage';
+import AuthCallbackPage from './pages/AuthCallbackPage';
 import './index.css';
 
 function ProtectedRoute({ children }) {
@@ -81,6 +82,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/" element={<Navigate to="/pacientes" replace />} />
             <Route path="*" element={<Navigate to="/pacientes" replace />} />
           </Routes>

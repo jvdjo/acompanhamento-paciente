@@ -78,10 +78,36 @@ npm run preview
 
 ---
 
-## 🔐 Credenciais Padrão
+## 🔐 Autenticação
 
+O sistema suporta duas formas de login:
+
+### Login Tradicional (Email/Senha)
 - **Email:** admin@clinica.com
 - **Senha:** admin123
+
+### Login com Google OAuth2
+
+Para habilitar o login com Google, você precisa configurar as credenciais OAuth2:
+
+1. Acesse o [Google Cloud Console](https://console.cloud.google.com/)
+2. Crie um novo projeto ou selecione um existente
+3. Vá em **APIs e Serviços** > **Credenciais**
+4. Clique em **Criar Credenciais** > **ID do cliente OAuth**
+5. Selecione **Aplicativo da Web**
+6. Adicione a URI de redirecionamento autorizada:
+   - `http://localhost:5008/signin-google`
+7. Copie o **Client ID** e **Client Secret**
+8. Configure no arquivo `backend/AcompanhamentoPaciente.Api/appsettings.Development.json`:
+
+```json
+{
+  "Google": {
+    "ClientId": "SEU_GOOGLE_CLIENT_ID",
+    "ClientSecret": "SEU_GOOGLE_CLIENT_SECRET"
+  }
+}
+```
 
 ---
 
@@ -132,6 +158,7 @@ npm run lint
 ## 📝 Funcionalidades
 
 - ✅ Autenticação JWT
+- ✅ **Login com Google OAuth2**
 - ✅ Gerenciamento de Pacientes
 - ✅ Registro de Sessões
 - ✅ Notas de Texto nas Sessões
