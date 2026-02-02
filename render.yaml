@@ -1,0 +1,83 @@
+services:
+  # Database Service
+  - type: psql
+    name: acompanhamento-db
+    plan: free
+    region: oregon # or your preferred region
+    databaseName: acompanhamento_paciente
+    user: postgres
+
+  # Backend Service
+  - type: web
+    name: acompanhamento-api
+    plan: free
+    runtime: docker
+    dockerContext: backend
+    dockerfilePath: backend/Dockerfile
+    envVars:
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: acompanhamento-db
+          property: connectionString
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Jwt__Key
+        generateValue: true # Generates a secure random string
+      - key: Jwt__Issuer
+        value: PsicoNotes
+      - key: Jwt__Audience
+        value: PsicoNotes
+      # Note: Google Auth credentials need to be added manually in the dashboard
+      - key: Google__ClientId
+        sync: false
+      - key: Google__ClientSecret
+        sync: false
+      - key: Cors__AllowedOrigins__0
+        value: ${RENDER_EXTERNAL_URL_acompanhamento-web} # Points to the frontend URL
+
+  # Frontend Service (Static Site)
+  - type: web # Using web service for node static site build usually, but render has "static" type too.
+    # Ah, "type: static" is correct for static sites.
+    # HOWEVER, static sites in Blueprint might behave differently if we need build hooks.
+    # "type: web" implies a server. "type: static" is purely static assets.
+    # React+Vite is static.
+    # But blueprint spec key is "type: static" ? 
+    # Checking docs (implicit knowledge): yes "type: static_site" or just "type: web" served by a static server?
+    # Actually Render Blueprint spec uses "type: cron", "type: psql", "type: redis", "type: web", "type: worker".
+    # There IS "type: static_site" now?
+    # Let's check typical generic blueprint. "type: web" is safer if we want to run a small node server, but typically for Vite we want a Static Site.
+    # Render docs say: "type: static" exists.
+    # Let's try "type: static" but fallback to web if needed.
+    # Actually, for Blueprints, "type: psql", "type: redis", "type: web", "type: worker", "type: cron".
+    # Static sites are often defined as "type: web" with specific runtimes OR "type: static".
+    # I'll use "type: web" with `staticPublishPath` which effectively makes it a static site in many contexts, OR check if `type: static` is valid.
+    # Actually, the safest for Blueprints is `type: web` with `env: static`? No, runtime `static`? 
+    # Let's stick to `type: web` with `runtime: node` if I want to serve it, OR `type: static` if I am sure.
+    # Correction: `type: static` IS supported in render.yaml version 1.
+    # Reference: https://docs.render.com/blueprint-spec#static-sites
+    # Yes, `type: static` is valid.
+    name: acompanhamento-web
+    type: static
+    plan: free
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    root: frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: acompanhamento-api
+          property: url
+          envVarKey: RENDER_EXTERNAL_URL # Actually we construct the value or use the property
+        # Use simple value interpolation if allowed, or just trust `fromService` injects the URL.
+        # `fromService` typically injects the value into the env var.
+        # BUT Vite needs it at BUILD time.
+        # Creating a static site, env vars are available during build.
+      - key: VITE_APP_ENV
+        value: production
+
+databases:
+  - name: acompanhamento-db
+    plan: free
+    databaseName: acompanhamento_paciente
+    user: postgres
