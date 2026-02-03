@@ -71,7 +71,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Configure Forwarded Headers for Render (behind proxy)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor |
+                               Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear(); // Trust all networks (internal Render network)
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 // Apply migrations and seed data
 using (var scope = app.Services.CreateScope())
