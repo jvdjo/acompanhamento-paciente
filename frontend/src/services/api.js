@@ -44,8 +44,8 @@ export const getPaciente = async (id) => {
   return response.data;
 };
 
-export const createPaciente = async (nome) => {
-  const response = await api.post('/pacientes', { nome });
+export const createPaciente = async (patientData) => {
+  const response = await api.post('/pacientes', patientData);
   return response.data;
 };
 

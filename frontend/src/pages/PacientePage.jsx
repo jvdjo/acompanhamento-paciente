@@ -107,6 +107,25 @@ export default function PacientePage() {
                         <p className="text-muted">
                             Cadastrado em {formatDate(paciente.dataCadastro)}
                         </p>
+
+                        <div className="patient-details-grid">
+                            <div className="detail-item">
+                                <span className="detail-label">Idade</span>
+                                <span className="detail-value">{paciente.idade} anos</span>
+                            </div>
+                            <div className="detail-item">
+                                <span className="detail-label">Gênero</span>
+                                <span className="detail-value">{paciente.genero || 'Não informado'}</span>
+                            </div>
+                            <div className="detail-item">
+                                <span className="detail-label">Profissão</span>
+                                <span className="detail-value">{paciente.profissao || 'Não informada'}</span>
+                            </div>
+                            <div className="detail-item">
+                                <span className="detail-label">Escolaridade</span>
+                                <span className="detail-value">{paciente.escolaridade || 'Não informada'}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

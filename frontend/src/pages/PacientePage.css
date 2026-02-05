@@ -146,6 +146,37 @@
     padding: 3rem;
 }
 
+.patient-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+@media (min-width: 768px) {
+    .patient-details-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.detail-value {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
 @media (max-width: 640px) {
     .patient-header {
         flex-direction: column;

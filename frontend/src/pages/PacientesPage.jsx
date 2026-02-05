@@ -6,20 +6,25 @@ import { getPacientes, createPaciente, deletePaciente } from '../services/api';
 import './PacientesPage.css';
 
 export default function PacientesPage() {
+    const navigate = useNavigate();
     const [pacientes, setPacientes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showForm, setShowForm] = useState(false);
-    const [newName, setNewName] = useState('');
     const [search, setSearch] = useState('');
-
-    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        nome: '',
+        profissao: '',
+        escolaridade: '',
+        dataNascimento: '',
+        genero: ''
+    });
 
     useEffect(() => {
-        loadPacientes();
+        loadData();
     }, []);
 
-    const loadPacientes = async () => {
+    const loadData = async () => {
         try {
             const data = await getPacientes();
             setPacientes(data);
@@ -30,21 +35,38 @@ export default function PacientesPage() {
         }
     };
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
     const handleCreate = async (e) => {
         e.preventDefault();
-        if (!newName.trim()) return;
+        if (!formData.nome.trim()) return;
 
         try {
-            const paciente = await createPaciente(newName.trim());
+            const paciente = await createPaciente({
+                ...formData,
+                nome: formData.nome.trim(),
+                dataNascimento: new Date(formData.dataNascimento).toISOString()
+            });
             setPacientes([...pacientes, paciente]);
-            setNewName('');
+            setFormData({
+                nome: '',
+                profissao: '',
+                escolaridade: '',
+                dataNascimento: '',
+                genero: ''
+            });
             setShowForm(false);
         } catch (err) {
             setError('Erro ao criar paciente');
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id, e) => {
+        e.stopPropagation();
+        if (!confirm('Deseja excluir este paciente?')) return;
         try {
             await deletePaciente(id);
             setPacientes(pacientes.filter(p => p.id !== id));
@@ -53,16 +75,16 @@ export default function PacientesPage() {
         }
     };
 
-    const filteredPacientes = pacientes.filter(p =>
-        p.nome.toLowerCase().includes(search.toLowerCase())
+    const filteredPacientes = pacientes.filter(paciente =>
+        paciente.nome.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
         <>
             <Header />
             <main className="page">
-                <div className="page-header">
-                    <h1 className="page-title">Meus Pacientes</h1>
+                <div className="header-actions">
+                    <h1>Meus Pacientes</h1>
                     <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
                         {showForm ? 'Cancelar' : '+ Novo Paciente'}
                     </button>
@@ -70,19 +92,89 @@ export default function PacientesPage() {
 
                 {showForm && (
                     <form onSubmit={handleCreate} className="new-patient-form card fade-in">
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                className="input"
-                                placeholder="Nome do paciente"
-                                value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
-                                autoFocus
-                            />
+                        <div className="form-grid">
+                            <div className="input-group">
+                                <label>Nome Completo</label>
+                                <input
+                                    type="text"
+                                    name="nome"
+                                    className="input"
+                                    placeholder="Nome do paciente"
+                                    value={formData.nome}
+                                    onChange={handleInputChange}
+                                    required
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="input-group">
+                                <label>Data de Nascimento</label>
+                                <input
+                                    type="date"
+                                    name="dataNascimento"
+                                    className="input"
+                                    value={formData.dataNascimento}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="input-group">
+                                <label>Gênero</label>
+                                <select
+                                    name="genero"
+                                    className="input"
+                                    value={formData.genero}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="">Selecione...</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Feminino">Feminino</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+
+                            <div className="input-group">
+                                <label>Profissão</label>
+                                <input
+                                    type="text"
+                                    name="profissao"
+                                    className="input"
+                                    placeholder="Ex: Engenheiro"
+                                    value={formData.profissao}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+
+                            <div className="input-group">
+                                <label>Escolaridade</label>
+                                <select
+                                    name="escolaridade"
+                                    className="input"
+                                    value={formData.escolaridade}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Selecione...</option>
+                                    <option value="Fundamental Incompleto">Fundamental Incompleto</option>
+                                    <option value="Fundamental Completo">Fundamental Completo</option>
+                                    <option value="Médio Incompleto">Médio Incompleto</option>
+                                    <option value="Médio Completo">Médio Completo</option>
+                                    <option value="Superior Incompleto">Superior Incompleto</option>
+                                    <option value="Superior Completo">Superior Completo</option>
+                                    <option value="Pós-graduação">Pós-graduação</option>
+                                </select>
+                            </div>
                         </div>
-                        <button type="submit" className="btn btn-primary">
-                            Cadastrar
-                        </button>
+
+                        <div className="form-actions">
+                            <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>
+                                Cancelar
+                            </button>
+                            <button type="submit" className="btn btn-primary">
+                                Cadastrar Paciente
+                            </button>
+                        </div>
                     </form>
                 )}
 
