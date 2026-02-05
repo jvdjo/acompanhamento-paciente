@@ -1,20 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { login as apiLogin } from '../services/api';
+import { useSearchParams } from 'react-router-dom';
 import './LoginPage.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5008/api';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
     const [searchParams] = useSearchParams();
-
-    const { login } = useAuth();
-    const navigate = useNavigate();
 
     useEffect(() => {
         // Verifica se há erro de autenticação Google na URL
@@ -28,22 +20,6 @@ export default function LoginPage() {
             setError(errorMessages[errorParam] || 'Erro de autenticação');
         }
     }, [searchParams]);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
-
-        try {
-            const response = await apiLogin(email, password);
-            login(response.token, response.nome, response.picture);
-            navigate('/pacientes');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Erro ao fazer login');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleGoogleLogin = () => {
         // Redireciona para o endpoint de autenticação Google do backend
@@ -81,50 +57,13 @@ export default function LoginPage() {
                         </svg>
                         Continuar com Google
                     </button>
-
-                    <div className="login-divider">
-                        <span>ou</span>
-                    </div>
-
-                    {/* Formulário tradicional */}
-                    <form onSubmit={handleSubmit}>
-                        <div className="input-group">
-                            <label htmlFor="email">E-mail</label>
-                            <input
-                                id="email"
-                                type="email"
-                                className="input"
-                                placeholder="seu@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <div className="input-group">
-                            <label htmlFor="password">Senha</label>
-                            <input
-                                id="password"
-                                type="password"
-                                className="input"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <button type="submit" className="btn btn-primary login-btn" disabled={loading}>
-                            {loading ? <span className="loader" style={{ width: 20, height: 20 }}></span> : 'Entrar'}
-                        </button>
-                    </form>
+                    <p className="login-hint text-muted" style={{ marginTop: '1rem', textAlign: 'center' }}>
+                        Acesso exclusivo via conta Google autorizada.
+                    </p>
                 </div>
-
-                <p className="login-hint text-muted">
-                    Use sua conta Google ou as credenciais padrão: admin@clinica.com / admin123
-                </p>
             </div>
         </div>
     );
 }
+
 

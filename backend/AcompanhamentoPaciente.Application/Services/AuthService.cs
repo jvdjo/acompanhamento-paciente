@@ -16,19 +16,7 @@ public class AuthService : IAuthService
         _jwtService = jwtService;
     }
 
-    public async Task<LoginResponse?> LoginAsync(LoginRequest request)
-    {
-        var psicologo = await _psicologoRepository.GetByEmailAsync(request.Email);
 
-        if (psicologo == null || psicologo.Password != request.Password)
-        {
-            return null;
-        }
-
-        var token = _jwtService.GenerateToken(psicologo.Id, psicologo.Email, psicologo.Nome);
-        
-        return new LoginResponse(token, psicologo.Nome, psicologo.Picture);
-    }
 
     public async Task<LoginResponse> LoginWithGoogleAsync(GoogleUserInfo googleUser)
     {

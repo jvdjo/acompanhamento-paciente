@@ -21,18 +21,7 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpPost("login")]
-    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
-    {
-        var response = await _authService.LoginAsync(request);
 
-        if (response == null)
-        {
-            return Unauthorized(new { message = "Email ou senha inválidos" });
-        }
-        
-        return Ok(response);
-    }
 
     /// <summary>
     /// Inicia o fluxo de autenticação com Google OAuth2

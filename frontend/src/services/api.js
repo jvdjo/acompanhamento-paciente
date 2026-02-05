@@ -31,11 +31,7 @@ api.interceptors.response.use(
   }
 );
 
-// Auth
-export const login = async (email, password) => {
-  const response = await api.post('/auth/login', { email, password });
-  return response.data;
-};
+
 
 // Pacientes
 export const getPacientes = async () => {
