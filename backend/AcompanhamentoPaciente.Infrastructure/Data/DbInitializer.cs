@@ -8,8 +8,8 @@ public static class DbInitializer
 {
     public static void Initialize(AppDbContext context)
     {
-        // context.Database.EnsureDeleted();
-        // context.Database.EnsureCreated();
-        context.Database.Migrate();
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+        // context.Database.Migrate();
     }
 }
